@@ -22,16 +22,23 @@ const loginController = async (req, res) => {
 //register callback
 const registerController = async (req, res) => {
   try {
-    const newUser = new userModel(req.body);
-    await newUser.save();
-    res.status(201).json({
+    const { name, email, password } = req.body;
+    const user = await new userModel({
+      name,
+      email,
+      password,
+    }).save();
+    res.status(201).send({
       success: true,
-      newUSer,
+      message: "User Register Successfully",
+      user,
     });
   } catch (error) {
-    res.status(400).json({
+    console.log(error);
+    res.status(500).send({
       success: false,
-      message: "error in registration",
+      message: "Error in Registration",
+      error,
     });
   }
 };
