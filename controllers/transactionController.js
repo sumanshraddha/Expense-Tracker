@@ -1,26 +1,54 @@
-const transactionModel = require('../models/transactionModel')
+const transactionModel = require("../models/transactionModel");
+const moment = require("moment");
 
-const getAllTransactions = async(req,res) => {
-    try {
-        const transactions = await transactionModel.find({userid:req.body.userid})
-        res.status(200).json(transactions);
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(error);
-        
+const getAllTransactions = async (req, res) => {
+  try {
+    const { frequency,selectedDate,type } = req.body;
+    let dateFilter = {};
+    if (frequency !== "custom") {
+      dateFilter.date = {
+        $gt: moment().subtract(Number(frequency), "d").toDate(),
+      };
+    } else {
+      const { selectedDate } = req.body;
+      dateFilter.date = {
+        $gte: selectedDate[0],
+        $lte: selectedDate[1],
+      };
     }
-}
-const addTransaction = async(req,res) => {
-    try {
-        const newTransaction = new transactionModel(req.body);
-        await newTransaction.save();
-        res.status(201).send('Transaction Created');
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(error);
-        
-    }
-}
+    
+    const transactions = await transactionModel.find({
+      ...dateFilter,
+      userid: req.body.userid,
+      ...(type!=='all' && {type})
+    });
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+const editTransaction = async(req,res) => {
+  try {
+    await transactionModel.findOneAndUpdate({_id:req.body.transactionId},req.body.payload);
+    res.status(200).send('Edit succesfully')
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(error)
+    
+  }
 
-module.exports = {getAllTransactions,addTransaction};
+}
+const addTransaction = async (req, res) => {
+  try {
+    const newTransaction = new transactionModel(req.body);
+    await newTransaction.save();
+    res.status(201).send("Transaction Created");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+module.exports = { getAllTransactions, addTransaction ,editTransaction};
