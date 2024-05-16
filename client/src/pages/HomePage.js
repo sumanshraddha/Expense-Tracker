@@ -58,7 +58,12 @@ const HomePage = () => {
               setShowModal(true);
             }}
           />
-          <DeleteColumnOutlined className="mx-2" />
+          <DeleteColumnOutlined
+            className="mx-2"
+            onClick={() => {
+              handleDelete(record);
+            }}
+          />
         </div>
       ),
     },
@@ -72,7 +77,7 @@ const HomePage = () => {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
         setLoading(true);
-        const res = await axios.post("/transactions/get-transaction", {
+        const res = await axios.post("/api/v1/transactions/get-transaction", {
           userid: user._id,
           frequency,
           selectedDate,
@@ -89,13 +94,27 @@ const HomePage = () => {
     getAllTransactions();
   }, [frequency, selectedDate, type]);
 
+  const handleDelete = async (record) => {
+    try {
+      setLoading(true);
+      await axios.post("/api/v1/transactions/delete-transaction", {
+        transactionId: record._id,
+      });
+      setLoading(false);
+      message.success("Transaction deleted!");
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      message.error("Unable to delete");
+    }
+  };
   //form handling
   const handleSubmit = async (value) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       setLoading(true);
       if (editable) {
-        await axios.post("/transactions/edit-transaction", {
+        await axios.post("/api/v1/transactions/edit-transaction", {
           payload: {
             ...value,
             userId: user._id,
@@ -105,7 +124,7 @@ const HomePage = () => {
         setLoading(false);
         message.success("Transaction Updated Successfully");
       } else {
-        await axios.post("/transactions/add-transaction", {
+        await axios.post("/api/v1/transactions/add-transaction", {
           ...value,
           userid: user._id,
         });
