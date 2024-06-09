@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,7 +12,7 @@ const Login = () => {
   const submitHandler = async (values) => {
     try {
       setLoading(true);
-      const { data } = await axios.post("/api/v1/users/login", values);
+      const { data } = await axios.post("/users/login", values);
       setLoading(false);
       message.success("login success");
       localStorage.setItem(
@@ -45,9 +45,7 @@ const Login = () => {
             <Input type="password" />
           </Form.Item>
           <div className="d-flex justify-content-between">
-            <Link to="/register">
-              Not a user? Click here to Register
-            </Link>
+            <Link to="/register">Not a user? Click here to Register</Link>
             <button className="btn btn-primary">Login</button>
           </div>
         </Form>

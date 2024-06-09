@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,12 +7,12 @@ import Spinner from "../components/Spinner";
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+
   //form submit
   const submitHandler = async (values) => {
     try {
       //console.log(values);
-      await axios.post("/api/v1/users/register", values);
+      await axios.post("/users/register", values);
       message.success("Registration successful");
       setLoading(false);
       navigate("/login");
@@ -23,11 +23,11 @@ const Register = () => {
   };
 
   //prevent for login user
-  useEffect(()=>{
-    if(localStorage.getItem('user')){
-      navigate("/")
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/");
     }
-  },[navigate]);
+  }, [navigate]);
   return (
     <>
       <div className="register-page">
